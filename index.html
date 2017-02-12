@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+    <title>Tourist Attractions in Delhi</title>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="title-block">
+        <!--i class="fa fa-bars fa-lg" aria-hidden="true"></i-->
+        <h1>Tourist Attractions in Delhi</h1>
+      </div>
+
+      <div class="options-box">
+          <label>Filter the locations:</label>
+          <input type="text" placeholder="Type here to Filter...">
+          <div id="list">
+            <ul class="location-names" data-bind="foreach: locationList">
+              <li data-bind="text: title"></li>
+
+            </ul>
+          </div>
+      </div>
+
+      <div id="map" class="map"></div>
+    </div>
+
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBxWA0Owkw8tEmd4D8pTq8hTLU0VJrgo54&v=3&callback=initMap">
+   </script>
+    <script src="js/jquery-3.1.1.min.js"></script>
+    <script src="js/knockout-3.4.1.js"></script>
+    <script src="js/app.js"></script>
+    <!--script src="https://use.fontawesome.com/056e8c93a6.js"></script-->
+
+  </body>
+
+</html>

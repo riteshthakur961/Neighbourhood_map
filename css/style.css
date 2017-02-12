@@ -1,0 +1,14 @@
+html,
+body,
+.container {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+.fa-bars.fa-lg {
+  padding: 10px;
+  margin: 5px;
+}
+#map {
+  height: 100%;
+}
