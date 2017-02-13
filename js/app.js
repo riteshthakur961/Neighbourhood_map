@@ -250,10 +250,30 @@ function initMap() {
     var infowindow = new google.maps.InfoWindow();
     var bounds = new google.maps.LatLngBounds();
 
+    // This is to re-center the map upon resizing of the window
+    window.onresize = function() {
+        map.fitBounds(bounds);
+    };
+
+    // when clicked on elsewhere on the map, close the infowindow
+    map.addListener("click", function() {
+        infowindow.close(infowindow);
+    });
+
+    //https://developers.google.com/maps/documentation/javascript/examples/marker-animations
+    function bounceMarker() {
+        if (marker.getAnimation() !== null) {
+          marker.setAnimation(null);
+        } else {
+          marker.setAnimation(google.maps.Animation.BOUNCE);
+        }
+    }
+
     //create a locCreate object
-    var locCreate = function(data) {
+    var locCreate = function(data, id) {
         this.title = ko.observable(data.title);
         this.location = data.location;
+        this.markerId = id;
     };
 
     function viewModel() {
@@ -264,34 +284,77 @@ function initMap() {
             self.locationList.push(new locCreate(loc));
         });
 
-    //create a marker for every location
-    this.locationList().forEach(function(loc) {
-        var marker = new google.maps.Marker({
-            map: map,
-            position: loc.location,
-            animation: google.maps.Animation.DROP
+        //create a marker for every location
+        this.locationList().forEach(function(loc) {
+            var marker = new google.maps.Marker({
+                map: map,
+                position: loc.location,
+                title: loc.title(),
+                animation: google.maps.Animation.DROP
+            });
+            loc.marker = marker;
+            //for each marker, extend the boundaries of the map
+            bounds.extend(marker.position);
+            //open an infowindow on click on the marker
+            marker.addListener("click", function() {
+                populateInfowindow(this, infowindow);
+                bounceMarker(marker);
+            });
         });
-        loc.marker = marker;
-        //for each marker, extend the boundaries of the map
-        bounds.extend(marker.position);
-        //open an infowindow on click on the marker
-        marker.addListener("click", function() {
-            populateInfowindow(this, infowindow);
-        });
-    });
 
-    function populateInfowindow(marker, infowindow) {
-        //check to make sure the infoWindow is not already opened on this marker.
-        if (infowindow.marker != marker) {
-          infowindow.marker = marker;
-          infowindow.setContent('<div>' + marker.title + '</div>');
-          infowindow.open(map, marker);
-          //make sure the marker property is cleared if the infowindow is closed.
-          infowindow.addListener('closeclick', function(){
-              infowindow.setMarker(null);
-          });
+        self.clickList = function(loc) {
+            var markerId = loc.markerId;
+            map.setCenter(loc.location);
+            map.setZoom(15);
+
+            //https://developers.google.com/maps/documentation/javascript/examples/event-simple
+            //http://stackoverflow.com/questions/16985867/adding-an-onclick-event-to-google-map-marker
+            google.maps.event.trigger(loc.marker, "click");
         }
-      }
+
+        function populateInfowindow(marker, infowindow) {
+
+            //check to make sure the infoWindow is not already opened on this marker.
+            if (infowindow.marker != marker) {
+                infowindow.marker = marker;
+                infowindow.setContent('<div><h3>' + marker.title + '</h3><ul id="wiki-info"></ul></div>');
+
+                // load wikipedia data
+                var wikiUrl = 'http://en.wikipedia.org/w/api.php?action=opensearch&search=' + marker.title + '&format=json&callback=wikiCallback';
+                // There is no error handling in JSON-P , hence Using a Timeout can help us work aound a solution for handling errors
+                var wikiRequestTimeout = setTimeout(function(){
+                    alert("An Error Occured");
+                }, 5000);
+
+                $.ajax({
+                    url: wikiUrl,
+                    dataType: "jsonp",
+
+                    //as of jquery 1.8 the use of success as a callback is deprecated, use .done(function(){//.....}) instead
+                    success: function(response) {
+                        var articleList = response[3];
+                        var $wiki = $('#wiki-info');
+                        for (var i = 0; i < articleList.length; i++) {
+                            articleStr = articleList[i];
+                            $wiki.append('<li><a href="' + articleStr + '">' + 'Click here for more info' + '</a></li>');
+                        };
+                        $wiki.append('<img src="images/mediawiki.png" alt="mediawiki image">');
+                        //Since there is no need for a timeout , when the AJAX request has been responded by the server
+                        clearTimeout(wikiRequestTimeout);
+                    }
+                });
+
+                infowindow.open(map, marker);
+                //make sure the marker property is cleared if the infowindow is closed.
+                infowindow.addListener('closeclick', function(){
+                    infowindow.marker = null;
+                });
+
+            }
+
+
+
+        }
     }
 
     // Activates knockout.js

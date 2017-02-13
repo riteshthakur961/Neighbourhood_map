@@ -20,7 +20,7 @@
           <input type="text" placeholder="Type here to Filter...">
           <div id="list">
             <ul class="location-names" data-bind="foreach: locationList">
-              <li data-bind="text: title"></li>
+              <li data-bind="text: title, click: $root.clickList"></li>
 
             </ul>
           </div>
