@@ -236,8 +236,6 @@ var map,
     bounds;
 
 function initMap() {
-    // TODO: use a constructor to create a new map JS object. You can use the coordinates
-    // we used, 40.7413549, -73.99802439999996 or your own!
     map = new google.maps.Map(document.getElementById('map'), {
         center: {
             lat: 28.669815,
@@ -337,7 +335,6 @@ function initMap() {
                     url: wikiUrl,
                     dataType: "jsonp",
 
-                    //as of jquery 1.8 the use of success as a callback is deprecated, use .done(function(){//.....}) instead
                     success: function(response) {
                         var articleList = response[3];
                         var $wiki = $('#wiki-info');
