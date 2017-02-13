@@ -322,30 +322,24 @@ function initMap() {
             //check to make sure the infoWindow is not already opened on this marker.
             if (infowindow.marker != marker) {
                 infowindow.marker = marker;
-                infowindow.setContent('<div><h3>' + marker.title + '</h3><ul id="wiki-info"></ul></div>');
+                infowindow.setContent('<div><img src="images/mediawiki.png" alt="mediawiki image"><h3>' + marker.title + '</h3><ul id="wiki-info"></ul></div>');
 
                 // load wikipedia data
                 var wikiUrl = 'http://en.wikipedia.org/w/api.php?action=opensearch&search=' + marker.title + '&format=json&callback=wikiCallback';
-                // There is no error handling in JSON-P , hence Using a Timeout can help us work aound a solution for handling errors
-                var wikiRequestTimeout = setTimeout(function(){
-                    alert("An Error Occured");
-                }, 5000);
 
                 $.ajax({
                     url: wikiUrl,
-                    dataType: "jsonp",
-
-                    success: function(response) {
-                        var articleList = response[3];
-                        var $wiki = $('#wiki-info');
-                        for (var i = 0; i < articleList.length; i++) {
-                            articleStr = articleList[i];
-                            $wiki.append('<li><a href="' + articleStr + '">' + 'Click here for more info' + '</a></li>');
-                        };
-                        $wiki.append('<img src="images/mediawiki.png" alt="mediawiki image">');
-                        //Since there is no need for a timeout , when the AJAX request has been responded by the server
-                        clearTimeout(wikiRequestTimeout);
+                    dataType: "jsonp"})
+                .done(function(response) {
+                    var articleList = response[3];
+                    var $wiki = $('#wiki-info');
+                    for (var i = 0; i < articleList.length; i++) {
+                        articleStr = articleList[i];
+                        $wiki.append('<li><a href="' + articleStr + '">' + 'Click here for more info' + '</a></li>');
                     }
+                })
+                .fail(function(){
+                    alert("An Error Occured");
                 });
 
                 infowindow.open(map, marker);
