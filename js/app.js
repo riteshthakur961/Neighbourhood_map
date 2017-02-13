@@ -261,7 +261,7 @@ function initMap() {
     });
 
     //https://developers.google.com/maps/documentation/javascript/examples/marker-animations
-    function bounceMarker() {
+    function bounceMarker(marker) {
         if (marker.getAnimation() !== null) {
           marker.setAnimation(null);
         } else {
