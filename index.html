@@ -17,9 +17,9 @@
 
       <div class="options-box">
           <label>Filter the locations:</label>
-          <input type="text" placeholder="Type here to Filter...">
+          <input type="text" placeholder="Type here to Filter..." data-bind="textInput: query, valueUpdate:'afterkeydown'" autocomplete="off">
           <div id="list">
-            <ul class="location-names" data-bind="foreach: locationList">
+            <ul class="location-names" data-bind="foreach: filterLocations, visible: filterLocations().length > 0">
               <li data-bind="text: title, click: $root.clickList"></li>
 
             </ul>
@@ -29,8 +29,8 @@
       <div id="map" class="map"></div>
     </div>
 
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBxWA0Owkw8tEmd4D8pTq8hTLU0VJrgo54&v=3&callback=initMap">
-   </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBxWA0Owkw8tEmd4D8pTq8hTLU0VJrgo54&v=3&callback=initMap" onError="mapError()">
+    </script>
     <script src="js/jquery-3.1.1.min.js"></script>
     <script src="js/knockout-3.4.1.js"></script>
     <script src="js/app.js"></script>

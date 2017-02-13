@@ -240,8 +240,8 @@ function initMap() {
     // we used, 40.7413549, -73.99802439999996 or your own!
     map = new google.maps.Map(document.getElementById('map'), {
         center: {
-            lat: 28.661898,
-            lng: 77.227396
+            lat: 28.669815,
+            lng: 77.228679
         },
         zoom: 11,
         styles: styles
@@ -266,6 +266,9 @@ function initMap() {
           marker.setAnimation(null);
         } else {
           marker.setAnimation(google.maps.Animation.BOUNCE);
+            setTimeout(function(){
+                marker.setAnimation(null);
+            }, 3500);
         }
     }
 
@@ -276,8 +279,14 @@ function initMap() {
         this.markerId = id;
     };
 
+
+    var mapError = function() {
+        alert('404 Error Not Found');
+    };
+
     function viewModel() {
         var self = this;
+
         //create the list items
         this.locationList = ko.observableArray();
         locationData.forEach(function(loc) {
@@ -304,8 +313,6 @@ function initMap() {
 
         self.clickList = function(loc) {
             var markerId = loc.markerId;
-            map.setCenter(loc.location);
-            map.setZoom(15);
 
             //https://developers.google.com/maps/documentation/javascript/examples/event-simple
             //http://stackoverflow.com/questions/16985867/adding-an-onclick-event-to-google-map-marker
@@ -351,10 +358,33 @@ function initMap() {
                 });
 
             }
-
-
-
         }
+
+        //This is for filtering the list and the markers
+        //http://www.knockmeout.net/2011/04/utility-functions-in-knockoutjs.html
+        //http://opensoul.org/2011/06/23/live-search-with-knockoutjs/
+        self.query = ko.observable(" ");
+
+        this.filterLocations = ko.dependentObservable(function() {
+            var queryVar = this.query().toLowerCase();
+            if (!queryVar) {
+                // This is to return the original locations i.e. self.locationList
+                return ko.utils.arrayFilter(self.locationList(), function(markerVar) {
+                    markerVar.marker.setVisible(true);
+                    return true;
+                });
+            } else {
+                return ko.utils.arrayFilter(this.locationList(), function(markerVar) {
+                    if (markerVar.marker.title.toLowerCase().indexOf(queryVar) >= 0) {
+                        return true;
+                    } else {
+                        markerVar.marker.setVisible(false);
+                        return false;
+                    }
+                });
+            }
+        }, this);
+
     }
 
     // Activates knockout.js
