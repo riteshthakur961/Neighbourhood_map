@@ -285,7 +285,7 @@ function initMap() {
         var self = this;
 
         //create the list items
-        this.locationList = ko.observableArray();
+        self.locationList = ko.observableArray();
         locationData.forEach(function(loc) {
             self.locationList.push(new locCreate(loc));
         });
@@ -367,6 +367,7 @@ function initMap() {
             } else {
                 return ko.utils.arrayFilter(this.locationList(), function(markerVar) {
                     if (markerVar.marker.title.toLowerCase().indexOf(queryVar) >= 0) {
+                        markerVar.marker.setVisible(true);
                         return true;
                     } else {
                         markerVar.marker.setVisible(false);
