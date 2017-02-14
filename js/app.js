@@ -235,6 +235,10 @@ var map,
     infowindow,
     bounds;
 
+var mapError = function() {
+        alert('404 Error Not Found');
+};
+
 function initMap() {
     map = new google.maps.Map(document.getElementById('map'), {
         center: {
@@ -261,10 +265,10 @@ function initMap() {
     //https://developers.google.com/maps/documentation/javascript/examples/marker-animations
     function bounceMarker(marker) {
         if (marker.getAnimation() !== null) {
-          marker.setAnimation(null);
+            marker.setAnimation(null);
         } else {
-          marker.setAnimation(google.maps.Animation.BOUNCE);
-            setTimeout(function(){
+            marker.setAnimation(google.maps.Animation.BOUNCE);
+            setTimeout(function() {
                 marker.setAnimation(null);
             }, 3500);
         }
@@ -275,11 +279,6 @@ function initMap() {
         this.title = ko.observable(data.title);
         this.location = data.location;
         this.markerId = id;
-    };
-
-
-    var mapError = function() {
-        alert('404 Error Not Found');
     };
 
     function viewModel() {
@@ -315,7 +314,7 @@ function initMap() {
             //https://developers.google.com/maps/documentation/javascript/examples/event-simple
             //http://stackoverflow.com/questions/16985867/adding-an-onclick-event-to-google-map-marker
             google.maps.event.trigger(loc.marker, "click");
-        }
+        };
 
         function populateInfowindow(marker, infowindow) {
 
@@ -328,23 +327,24 @@ function initMap() {
                 var wikiUrl = 'http://en.wikipedia.org/w/api.php?action=opensearch&search=' + marker.title + '&format=json&callback=wikiCallback';
 
                 $.ajax({
-                    url: wikiUrl,
-                    dataType: "jsonp"})
-                .done(function(response) {
-                    var articleList = response[3];
-                    var $wiki = $('#wiki-info');
-                    for (var i = 0; i < articleList.length; i++) {
-                        articleStr = articleList[i];
-                        $wiki.append('<li><a href="' + articleStr + '">' + 'Click here for more info' + '</a></li>');
-                    }
-                })
-                .fail(function(){
-                    alert("An Error Occured");
-                });
+                        url: wikiUrl,
+                        dataType: "jsonp"
+                    })
+                    .done(function(response) {
+                        var articleList = response[3];
+                        var $wiki = $('#wiki-info');
+                        for (var i = 0; i < articleList.length; i++) {
+                            articleStr = articleList[i];
+                            $wiki.append('<li><a href="' + articleStr + '" target="blank">Click here for more info' + '</a></li>');
+                        }
+                    })
+                    .fail(function() {
+                        alert("An Error Occured");
+                    });
 
                 infowindow.open(map, marker);
                 //make sure the marker property is cleared if the infowindow is closed.
-                infowindow.addListener('closeclick', function(){
+                infowindow.addListener('closeclick', function() {
                     infowindow.marker = null;
                 });
 
