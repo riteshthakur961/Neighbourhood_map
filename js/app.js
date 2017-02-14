@@ -114,119 +114,108 @@ var locationData = [ // It has the name of the Famous locations of Delhi along w
 
 ];
 
-var styles = [{
-        "featureType": "all",
-        "elementType": "labels.text.fill",
-        "stylers": [{
-            "color": "#ffffff"
-        }]
-    },
-    {
-        "featureType": "all",
-        "elementType": "labels.text.stroke",
-        "stylers": [{
-                "color": "#000000"
-            },
-            {
-                "lightness": 13
-            }
-        ]
-    },
-    {
-        "featureType": "administrative",
-        "elementType": "geometry.fill",
-        "stylers": [{
-            "color": "#000000"
-        }]
-    },
-    {
-        "featureType": "administrative",
-        "elementType": "geometry.stroke",
-        "stylers": [{
-                "color": "#144b53"
-            },
-            {
-                "lightness": 14
-            },
-            {
-                "weight": 1.4
-            }
-        ]
-    },
+var styles = [
     {
         "featureType": "landscape",
-        "elementType": "all",
-        "stylers": [{
-            "color": "#08304b"
-        }]
-    },
-    {
-        "featureType": "poi",
-        "elementType": "geometry",
-        "stylers": [{
-                "color": "#0c4152"
+        "stylers": [
+            {
+                "hue": "#FFBB00"
             },
             {
-                "lightness": 5
+                "saturation": 43.400000000000006
+            },
+            {
+                "lightness": 37.599999999999994
+            },
+            {
+                "gamma": 1
             }
         ]
     },
     {
         "featureType": "road.highway",
-        "elementType": "geometry.fill",
-        "stylers": [{
-            "color": "#000000"
-        }]
-    },
-    {
-        "featureType": "road.highway",
-        "elementType": "geometry.stroke",
-        "stylers": [{
-                "color": "#0b434f"
+        "stylers": [
+            {
+                "hue": "#FFC200"
             },
             {
-                "lightness": 25
+                "saturation": -61.8
+            },
+            {
+                "lightness": 45.599999999999994
+            },
+            {
+                "gamma": 1
             }
         ]
     },
     {
         "featureType": "road.arterial",
-        "elementType": "geometry.fill",
-        "stylers": [{
-            "color": "#000000"
-        }]
-    },
-    {
-        "featureType": "road.arterial",
-        "elementType": "geometry.stroke",
-        "stylers": [{
-                "color": "#0b3d51"
+        "stylers": [
+            {
+                "hue": "#FF0300"
             },
             {
-                "lightness": 16
+                "saturation": -100
+            },
+            {
+                "lightness": 51.19999999999999
+            },
+            {
+                "gamma": 1
             }
         ]
     },
     {
         "featureType": "road.local",
-        "elementType": "geometry",
-        "stylers": [{
-            "color": "#000000"
-        }]
-    },
-    {
-        "featureType": "transit",
-        "elementType": "all",
-        "stylers": [{
-            "color": "#146474"
-        }]
+        "stylers": [
+            {
+                "hue": "#FF0300"
+            },
+            {
+                "saturation": -100
+            },
+            {
+                "lightness": 52
+            },
+            {
+                "gamma": 1
+            }
+        ]
     },
     {
         "featureType": "water",
-        "elementType": "all",
-        "stylers": [{
-            "color": "#021019"
-        }]
+        "stylers": [
+            {
+                "hue": "#0078FF"
+            },
+            {
+                "saturation": -13.200000000000003
+            },
+            {
+                "lightness": 2.4000000000000057
+            },
+            {
+                "gamma": 1
+            }
+        ]
+    },
+    {
+        "featureType": "poi",
+        "stylers": [
+            {
+                "hue": "#00FF6A"
+            },
+            {
+                "saturation": -1.0989010989011234
+            },
+            {
+                "lightness": 11.200000000000017
+            },
+            {
+                "gamma": 1
+            }
+        ]
     }
 ];
 
@@ -321,7 +310,6 @@ function initMap() {
             //check to make sure the infoWindow is not already opened on this marker.
             if (infowindow.marker != marker) {
                 infowindow.marker = marker;
-                infowindow.setContent('<div><img src="images/mediawiki.png" alt="mediawiki image"><h3>' + marker.title + '</h3><ul id="wiki-info"></ul></div>');
 
                 // load wikipedia data
                 var wikiUrl = 'https://en.wikipedia.org/w/api.php?action=opensearch&search=' + marker.title + '&format=json&callback=wikiCallback';
@@ -331,23 +319,17 @@ function initMap() {
                         dataType: "jsonp"
                     })
                     .done(function(response) {
-                        var articleList = response[3];
-                        var $wiki = $('#wiki-info');
-                        for (var i = 0; i < articleList.length; i++) {
-                            articleStr = articleList[i];
-                            $wiki.append('<li><a href="' + articleStr + '" target="blank">Click here for more info' + '</a></li>');
-                        }
+                        var article = response[3][0];
+                        infowindow.setContent('<div><h3>' + marker.title + '</h3><a href="' + article + '" target="blank" style="display: block;">Click here for more info</a><img src="images/mediawiki.png" alt="mediawiki image"></div>');
+                        infowindow.open(map, marker);
+                        //make sure the marker property is cleared if the infowindow is closed.
+                        infowindow.addListener('closeclick', function() {
+                            infowindow.marker = null;
+                        });
                     })
                     .fail(function() {
                         alert("An Error Occured");
                     });
-
-                infowindow.open(map, marker);
-                //make sure the marker property is cleared if the infowindow is closed.
-                infowindow.addListener('closeclick', function() {
-                    infowindow.marker = null;
-                });
-
             }
         }
 
